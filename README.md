@@ -13,7 +13,7 @@ Install
 
 Install the following dependencies:
 
-* libfile-write-rotate (File::Write::Rotate)
+* libfile-write-rotate-perl (File::Write::Rotate)
 * libgeo-ip-perl (Geo::IP)
 * libnet-dns-perl (Net::DNS) - Version 0.68 on Ubuntu 14.04 and eariler one are not new enough to work
 * geoip-database-contrib
