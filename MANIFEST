@@ -1,0 +1,5 @@
+Build.PL
+lib/mpdnsd.pm
+MANIFEST			This list of files
+t/01_require_ok.t
+t/02_reply_handler.t
