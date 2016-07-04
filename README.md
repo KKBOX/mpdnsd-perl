@@ -8,6 +8,8 @@ Marco Polo DNS Daemon is a DNS server, which can return different CNAME record b
 
 Currently it supports three types: AS Number, Country Code, and Random.
 
+* [Open source our Marco Polo DNS Daemon](https://kkbox.codes/archives/2016/07/04/open-source-our-marco-polo-dns-daemon/)
+
 Install
 -------
 
