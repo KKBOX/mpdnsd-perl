@@ -59,6 +59,11 @@ $query = Net::DNS::Packet->new($dn, 'A', 'IN');
 ($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'A', '127.0.0.1', $query, $conn);
 is($rcode, 'NOERROR', 'country (US)');
 
+$dn = 'test.kkcube.com.hour.mp.kkcube.com';
+$query = Net::DNS::Packet->new($dn, 'A', 'IN');
+($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'A', '127.0.0.1', $query, $conn);
+is($rcode, 'NOERROR', 'hour');
+
 $dn = 'test.kkcube.com.r2.mp.kkcube.com';
 $query = Net::DNS::Packet->new($dn, 'A', 'IN');
 ($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'A', '127.0.0.1', $query, $conn);
