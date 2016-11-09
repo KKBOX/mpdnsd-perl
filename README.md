@@ -64,6 +64,11 @@ Also, you can get country code:
     dig test.example.com.country.mp.example.com @mp-ns1.example.com
     TW.test.example.com
 
+And you can get the utc hour:
+
+    dig test.example.com.hour.mp.example.com
+    9.test.example.com
+
 And you can choose randomly for range [0..10) (i.e. 0~9):
 
     dig test.example.com.r10.mp.example.com

@@ -16,8 +16,9 @@ use Net::DNS::Packet;
 use Net::DNS::Nameserver;
 use Net::DNS::RR;
 use Sys::Syslog qw/:macros :standard/;
+use POSIX qw(strftime);
 
-our ($asnip, $bind_host, $cpu, $geoip, $nsrrs, %opts, $port, $querylog, $querylog_file, $service_domain, $ttl, $ttl_asn, $ttl_country, $ttl_ns, $ttl_random, $whitelist_domain);
+our ($asnip, $bind_host, $cpu, $geoip, $nsrrs, %opts, $port, $querylog, $querylog_file, $service_domain, $ttl, $ttl_asn, $ttl_country, $ttl_hour, $ttl_ns, $ttl_random, $whitelist_domain);
 
 sub init_getopt {
     $bind_host = '127.0.0.1';
@@ -28,6 +29,7 @@ sub init_getopt {
     $ttl = 20;
     $ttl_asn = 43200;
     $ttl_country = 43200;
+    $ttl_hour = 60;
     $ttl_ns = 43200;
     $ttl_random = 20;
     $whitelist_domain = 'kfs.io,kkbox.com,kkbox.com.tw,kkcube.com';
@@ -46,6 +48,7 @@ sub run {
         'ttl|t=i' => \$ttl,
         'ttl_asn=i' => \$ttl_asn,
         'ttl_country=i' => \$ttl_country,
+        'ttl_hour=i' => \$ttl_hour,
         'ttl_ns=i' => \$ttl_ns,
         'ttl_random=i' => \$ttl_random,
         'whitelist_domain=s' => \$whitelist_domain,
@@ -201,6 +204,14 @@ VALID:
             return;
         }
 
+        if ('hour' eq lc($service)) {
+            my $hour = strftime "%k", gmtime;
+            my $rr = Net::DNS::RR->new("${qname} ${ttl_hour} IN CNAME ${hour}.${suffix}");
+            push @ans, $rr;
+            $rcode = 'NOERROR';
+            return;
+        }
+
         if ($service =~ /r(\d+)/i) {
             my $num = int rand int $1;
             my $rr = Net::DNS::RR->new("${qname} ${ttl_random} IN CNAME ${num}.${suffix}");
@@ -229,7 +240,7 @@ mpdnsd - Marco Polo DNS Daemon
 
 =head1 SYNOPSIS
 
-mpdnsd [--bind_host IP1,IP2,...] [--cpu CPU] [--nsrrs NS1.DOMAIN,NS2.DOMAIN,...] [--port PORT] [--querylog_file FILENAME] [--server_domain SERVICE.DOMAIN] [--ttl_asn SECONDS] [--ttl_country SECONDS][--ttl_ns SECONDS] [--ttl_random SECONDS]
+mpdnsd [--bind_host IP1,IP2,...] [--cpu CPU] [--nsrrs NS1.DOMAIN,NS2.DOMAIN,...] [--port PORT] [--querylog_file FILENAME] [--server_domain SERVICE.DOMAIN] [--ttl_asn SECONDS] [--ttl_country SECONDS] [--ttl_hour SECOND] [--ttl_ns SECONDS] [--ttl_random SECONDS]
 
 =head1 DESCRIPTION
 
