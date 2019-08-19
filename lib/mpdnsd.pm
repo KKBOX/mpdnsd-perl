@@ -132,6 +132,8 @@ sub reply_handler {
     if (lc($qname) =~ /^(.+)\.(\w+)\.\Q${service_domain}\E$/) {
         $suffix = $1;
         $service = $2;
+    } elsif (lc($qname) =~ /\.\Q${service_domain}\E$/) {
+        return ('NXDOMAIN', \@ans, \@auth, \@add, {aa => 1});
     } else {
         return ('REFUSED', \@ans, \@auth, \@add, {aa => 1});
     }
@@ -143,7 +145,7 @@ sub reply_handler {
         }
     }
 
-    return ('REFUSED', \@ans, \@auth, \@add, {aa => 1});
+    return ('NXDOMAIN', \@ans, \@auth, \@add, {aa => 1});
 VALID:
 
     my $rcode = 'SERVFAIL';

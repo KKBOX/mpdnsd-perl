@@ -27,7 +27,7 @@ is($rcode, 'REFUSED', 'invalid service domain');
 $dn = 'invalid.com.r2.mp.kkcube.com';
 $query = Net::DNS::Packet->new($dn, 'A', 'IN');
 ($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'A', '127.0.0.1', $query, $conn);
-is($rcode, 'REFUSED', 'invalid return domain');
+is($rcode, 'NXDOMAIN', 'invalid return domain');
 
 $dn = 'mp.kkcube.com';
 $query = Net::DNS::Packet->new($dn, 'NS', 'IN');
@@ -37,7 +37,7 @@ is($rcode, 'NOERROR', 'nameserver');
 $dn = 'asn.mp.kkcube.com';
 $query = Net::DNS::Packet->new($dn, 'NS', 'IN');
 ($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'NS', '127.0.0.1', $query, $conn);
-is($rcode, 'REFUSED', 'without return domain');
+is($rcode, 'NXDOMAIN', 'without return domain');
 
 $dn = 'test.kkcube.com.invalid.mp.kkcube.com';
 $query = Net::DNS::Packet->new($dn, 'NS', 'IN');
