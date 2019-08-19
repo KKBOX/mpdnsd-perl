@@ -34,6 +34,11 @@ $query = Net::DNS::Packet->new($dn, 'NS', 'IN');
 ($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'NS', '127.0.0.1', $query, $conn);
 is($rcode, 'NOERROR', 'nameserver');
 
+$dn = 'asn.mp.kkcube.com';
+$query = Net::DNS::Packet->new($dn, 'NS', 'IN');
+($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'NS', '127.0.0.1', $query, $conn);
+is($rcode, 'REFUSED', 'without return domain');
+
 $dn = 'test.kkcube.com.invalid.mp.kkcube.com';
 $query = Net::DNS::Packet->new($dn, 'NS', 'IN');
 ($rcode, $ans, $auth, $add, $opt) = mpdnsd::reply_handler($dn, 'IN', 'NS', '127.0.0.1', $query, $conn);
