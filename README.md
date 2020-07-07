@@ -16,9 +16,8 @@ Install
 Install the following dependencies:
 
 * libfile-write-rotate-perl (File::Write::Rotate)
-* libgeo-ip-perl (Geo::IP)
+* libgeoip2-perl (GeoIP2)
 * libnet-dns-perl (Net::DNS) - Version 0.68 on Ubuntu 14.04 and eariler one are not new enough to work
-* geoip-database-contrib
 
 Then just copy `lib/mpdnsd.pm` into `/usr/sbin/mpdnsd`.
 
