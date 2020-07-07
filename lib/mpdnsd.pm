@@ -9,13 +9,14 @@ use warnings;
 
 use File::Basename;
 use File::Write::Rotate;
-use Geo::IP;
+use GeoIP2::Database::Reader;
 use Getopt::Long;
 use Net::DNS;
 use Net::DNS::Packet;
 use Net::DNS::Nameserver;
 use Net::DNS::RR;
 use Sys::Syslog qw/:macros :standard/;
+use Try::Tiny;
 use POSIX qw(strftime);
 
 our ($asnip, $bind_host, $cpu, $geoip, $nsrrs, %opts, $port, $querylog, $querylog_file, $service_domain, $ttl, $ttl_asn, $ttl_country, $ttl_hour, $ttl_ns, $ttl_random, $whitelist_domain);
@@ -97,11 +98,11 @@ sub reload {
     openlog 'mpdnsd', 'pid', 'daemon';
     syslog LOG_NOTICE, 'syslogd reloaded';
 
-    $geoip = Geo::IP->open('/usr/share/GeoIP/GeoIP.dat', GEOIP_STANDARD);
-    syslog LOG_NOTICE, 'GeoIP.dat reloaded';
+    $geoip = GeoIP2::Database::Reader->new(file => '/usr/share/GeoIP/GeoLite2-Country.mmdb', locales => ['en']);
+    syslog LOG_NOTICE, 'GeoLite2-Country.mmdb reloaded';
 
-    $asnip = Geo::IP->open('/usr/share/GeoIP/GeoIPASNum.dat', GEOIP_STANDARD);
-    syslog LOG_NOTICE, 'GeoIPASNum.dat reloaded';
+    $asnip = GeoIP2::Database::Reader->new(file => '/usr/share/GeoIP/GeoLite2-ASN.mmdb', locales => ['en']);
+    syslog LOG_NOTICE, 'GeoLite2-ASN.mmdb reloaded';
 
     if (defined $querylog_file) {
         $querylog = File::Write::Rotate->new(
@@ -185,12 +186,10 @@ VALID:
         }} while (0);
 
         if ('asn' eq lc($service)) {
-            my $asn = $asnip->isp_by_addr($ip) // '';
-            if ($asn =~ /^AS(\d+) /) {
-                $asn = $1;
-            } else {
-                $asn = 'default';
-            }
+            my $asn = 'default';
+            try {
+                $asn = $asnip->asn(ip => $ip)->autonomous_system_number();
+            };
 
             my $rr = Net::DNS::RR->new("${qname} ${ttl_asn} IN CNAME ${asn}.${suffix}");
             push @ans, $rr;
@@ -199,7 +198,11 @@ VALID:
         }
 
         if ('country' eq lc($service)) {
-            my $cc = $geoip->country_code_by_addr($ip) // 'default';
+            my $cc = 'default';
+            try {
+                $cc = $geoip->country(ip => $ip)->country()->iso_code();
+            };
+
             my $rr = Net::DNS::RR->new("${qname} ${ttl_country} IN CNAME ${cc}.${suffix}");
             push @ans, $rr;
             $rcode = 'NOERROR';
